@@ -1,9 +1,24 @@
+using AzureWebSite.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions
+{
+    ConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]
+});
 
+var connectionString = builder.Configuration.GetConnectionString("AzureConnectionString");
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+  
 var app = builder.Build();
+
+
+
+//var connectionString = builder.Configuration.GetConnectionString("AzureConnectionString");
+//builder.Services.AddDbContext<AppDbContext>(context => context.UseSqlServer(connectionString));
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
